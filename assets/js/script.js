@@ -18,16 +18,65 @@ function generateTaskId() {
 // Todo: create a function to create a task card
 function createTaskCard(task) {
 
+    const card = $(`
+        <div class="task-card" data-id="${task.id}">
+            <h3>${task.title}</h3>
+            <p>${task.description}</p>
+            <button class="delete-btn">Delete</button>
+            <button class="edit-btn">Edit</button>
+        </div>
+    `);
+
+    card.find('.delete-btn').on('click', handleDeleteTask);
+    card.find('.edit-btn').on('click', function() {
+
+    });
+
+    return card;
 }
 
 // Todo: create a function to render the task list and make cards draggable
 function renderTaskList() {
 
+    const container = $('#task-container');
+    container.empty();
+
+    taskList.forEach(task => {
+        const card = createTaskCard(task);
+        card.draggable({
+            helper: "clone",
+            start: function(event, ui) {
+               
+            }
+        });
+        container.append(card);
+    });
+
+    $('.status-lane').droppable({
+        accept: ".task-card",
+        drop: handleDrop
+    });
 }
 
 // Todo: create a function to handle adding a new task
 function handleAddTask(event){
 
+    event.preventDefault();
+
+    const title = $('#task-title').val();
+    const description = $('#task-description').val();
+    const id = generateTaskId();
+
+    const newTask = {
+        id: id,
+        title: title,
+        description: description,
+        status: 'todo'
+    };
+
+    taskList.push(newTask);
+    localStorage.setItem('tasks', JSON.stringify(taskList));
+    renderTaskList();
 }
 
 // Todo: create a function to handle deleting a task
